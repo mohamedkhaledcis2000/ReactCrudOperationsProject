@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useParams } from "react-router-dom";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { Navigate } from "react-router-dom";
 export default function ProductEdit(){
 
     const Navigate = useNavigate()
@@ -21,7 +23,6 @@ export default function ProductEdit(){
         fetch(`http://localhost:9000/products/${productId}`)
         .then((res)=>res.json())
         .then((product)=>{
-            // setProduct(product);
             setProductData({
                 ...productData,
                 name: product.title,
@@ -30,21 +31,19 @@ export default function ProductEdit(){
             })
         })
     }, [productId])
-    const setData = (e) => {
-        e.preventDefault()
-        console.log('product......', productData);
-        const { name, price, description } = productData;
-        localStorage.setItem("name", name);
-        localStorage.setItem("price", price);
-        localStorage.setItem("description", description)
-        Navigate("/products")
-     }
 
-     const onChangeHandler = (e) => {
-        setProductData({
-            ...productData,
-            [e.target.name]: e.target.value
-        })
+    const formSubmit = (e) =>{
+        axios.put(`http://localhost:9000/products/${productId}`,{
+        title:name,
+        price:price,
+        description:description
+    }
+        )
+        e.preventDefault()
+        Navigate('/products')
+
+    
+    
     }
     return(
         <>
@@ -60,8 +59,7 @@ export default function ProductEdit(){
               className="form-control" 
               id="exampleFormControlInput1" 
               placeholder="Enter Product Name" 
-            //   onChange={(e)=>setName(e.target.value)}
-                onChange={onChangeHandler}
+              onChange={(e) => setName(e.target.value)}
               value={productData.name}
               />
               </div>
@@ -73,7 +71,7 @@ export default function ProductEdit(){
               className="form-control" 
               id="exampleFormControlInput2" 
               placeholder="Enter Description" 
-              onChange={onChangeHandler}
+              onChange={(e) => setDescription(e.target.value)}
               value={productData.description}
               />
               </div>
@@ -84,12 +82,12 @@ export default function ProductEdit(){
               name="price"
               className="form-control" 
               id="exampleFormControlInput3" 
-              placeholder="Enter Price" 
-              onChange={onChangeHandler}
+              placeholder="Enter Price"     
+              onChange={(e) => setPrice(e.target.value)}
               value={productData.price}
               />
               </div>
-              <button type='submit' onClick={setData} className="btn btn-danger">Update</button>
+              <button type='submit' onClick={formSubmit} className="btn btn-danger">Update</button>
               </form>
               </>
 

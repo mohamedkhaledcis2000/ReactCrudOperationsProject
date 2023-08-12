@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
+import swal from 'sweetalert';
 export default function Products(){
   const [product,setProduct]=useState([])
   useEffect(()=>{
@@ -11,6 +11,23 @@ export default function Products(){
       setProduct(data)
     })
   })
+
+  const getData = () => {
+    fetch("http://localhost:9000/products").then((response) => response.json())
+      .then((result) => {
+        setProduct(result)
+      })
+  }
+
+  const deleteProduct = (productId) => {
+    fetch(`http://localhost:9000/products/${productId}`,{
+      method:'DELETE',
+    })
+    .then((result) => {
+        // alert("Record deleted")
+        getData()
+      })
+  }
     return(
         <>
         <h1>Products Page</h1>
@@ -40,7 +57,7 @@ export default function Products(){
       <td>{p.description}</td>
       <td><Link to={`/products/edit/${p.id}`} className="btn btn-primary btn-sm ml-3">Edit</Link>
       <Link to={`/products/${p.id}`} className="btn btn-primary btn-sm left-3">View</Link>
-      <button className="btn btn-danger btn-sm left-3">Delete</button></td>
+      <button className="btn btn-danger btn-sm left-3" onClick={(e) => { deleteProduct(p.id) }}>Delete</button></td>
       </tr>)}
       )
         }
